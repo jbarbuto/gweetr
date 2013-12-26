@@ -10,7 +10,6 @@ app.secret_key = app.config['APP_SECRET_KEY']
 
 db = SQLAlchemy(app)
 
-import gweetr.models
 import gweetr.controllers
 
 
