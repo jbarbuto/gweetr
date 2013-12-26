@@ -67,8 +67,15 @@ def receive_message():
         args = args.split()
         track_params = {}
         for arg in args:
-            key, value = arg.split(':')
-            track_params[key] = value.replace('_', ' ')
+            try:
+                key, value = arg.split(':')
+            except ValueError as exc:
+                error = ("Param '%s' has no corresponding value, must be "
+                         "specified as key:value" % key)
+                resp.message(error)
+                return str(resp)
+            else:
+                track_params[key] = value.replace('_', ' ')
 
         # Check if tracks exist with the given parameters before calling
         try:
