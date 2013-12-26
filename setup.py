@@ -18,7 +18,8 @@ setup(
         ],
     },
 
-    install_requires=['flask', 'flask-sqlalchemy', 'pyechonest', 'twilio', ],
+    install_requires=['flask', 'flask-sqlalchemy', 'pyechonest', 'rfc3987',
+                      'twilio', ],
 
     author='John A. Barbuto',
     author_email='jbarbuto@gmail.com',

@@ -4,6 +4,7 @@ import random
 
 from pyechonest import config as echonest_config
 from pyechonest import song as echonest_song
+import rfc3987
 
 from gweetr import app
 from gweetr.exceptions import GweetrError
@@ -38,3 +39,12 @@ def fetch_track(track_params):
             'url': track_data['preview_url']
         }
         return track
+
+
+def is_valid_url(a_string):
+    """Check if a string is a valid URL."""
+    match_obj = rfc3987.match(a_string, 'URI')
+    if match_obj:
+        return True
+    else:
+        return False

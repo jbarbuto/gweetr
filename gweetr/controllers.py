@@ -8,7 +8,7 @@ import twilio.twiml
 from gweetr import app, db
 from gweetr.exceptions import GweetrError
 from gweetr.models import Greeting, Track
-from gweetr.utils import fetch_track
+from gweetr.utils import fetch_track, is_valid_url
 
 twilio_client = twilio.rest.TwilioRestClient(
     app.config['TWILIO_ACCOUNT_SID'],
@@ -34,13 +34,22 @@ def receive_voice():
     ).first()
     if greeting is None:
         for message in app.config['NO_SONG_MESSAGES']:
-            resp.say(message)
+            if is_valid_url(message):
+                resp.play(message)
+            else:
+                resp.say(message)
     else:
         for message in app.config['PRE_SONG_MESSAGES']:
-            resp.say(message)
+            if is_valid_url(message):
+                resp.play(message)
+            else:
+                resp.say(message)
         resp.play(greeting.track.url)
         for message in app.config['POST_SONG_MESSAGES']:
-            resp.say(message)
+            if is_valid_url(message):
+                resp.play(message)
+            else:
+                resp.say(message)
     resp.record()
     return str(resp)
 
