@@ -43,4 +43,4 @@ def fetch_track(track_params):
 
 def is_valid_url(a_string):
     """Check if a string is a valid URL."""
-    return rfc3987.match(a_string, 'URI')
+    return rfc3987.match(a_string, 'URI') is not None
