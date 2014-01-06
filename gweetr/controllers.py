@@ -15,6 +15,8 @@ twilio_client = twilio.rest.TwilioRestClient(
     app.config['TWILIO_AUTH_TOKEN'],
 )
 
+ALLOWED_ACTIONS = ('set',)
+
 
 @app.route('/receive-voice', methods=['POST'])
 def receive_voice():
@@ -64,14 +66,27 @@ def receive_message():
     """
     msg_from = request.values.get('From')
     msg_body = request.values.get('Body')
+    sms_command_prefix = app.config['SMS_COMMAND_PREFIX'].lower()
 
     resp = twilio.twiml.Response()
-    prefix, args = msg_body.split(None, 1)
-    if prefix.lower() != app.config['SMS_COMMAND_PREFIX'].lower():
-        # TODO: provide a way to specify an action for non-command texts
+    try:
+        prefix, args = msg_body.split(None, 1)
+    except ValueError:
+        if msg_body.lower() == sms_command_prefix:
+            resp.message("No action provided, must be one of the following: %s"
+                         % ','.join(ALLOWED_ACTIONS))
+        return str(resp)
+    else:
+        # TODO: provide a way to handle non-command texts
+        if prefix.lower() != sms_command_prefix:
+            return str(resp)
+
+    try:
+        action, args = args.split(None, 1)
+    except ValueError:
+        resp.message("No arguments provided for action '%s'" % args)
         return str(resp)
 
-    action, args = args.split(None, 1)
     if action == 'set':
         args = args.split()
         track_params = {}
@@ -97,18 +112,25 @@ def receive_message():
                 resp.message("No tracks match the parameters given")
                 return str(resp)
 
-        resp.message('You should receive a call shortly')
-        twilio_client.calls.create(
-            to=msg_from,
-            from_=app.config['TWILIO_PHONE_NUMBER'],
-            url=url_for(
-                'set_greeting_track',
-                _external=True,
-                track_params=json.dumps(track_params)
+        try:
+            twilio_client.calls.create(
+                to=msg_from,
+                from_=app.config['TWILIO_PHONE_NUMBER'],
+                url=url_for(
+                    'set_greeting_track',
+                    _external=True,
+                    track_params=json.dumps(track_params)
+                )
             )
-        )
+        except twilio.TwilioRestException as exc:
+            app.logger.error(str(exc))
+            resp.message('An error has occurred, '
+                         'please see server log for details')
+        else:
+            resp.message('You should receive a call shortly')
     else:
-        resp.message("Unknown action: %s" % action)
+        resp.message("Action '%s' unknown, must be one of the following: %s"
+                     % (action, ','.join(ALLOWED_ACTIONS)))
 
     return str(resp)
 
