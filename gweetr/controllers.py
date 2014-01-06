@@ -93,10 +93,9 @@ def receive_message():
         for arg in args:
             try:
                 key, value = arg.split(':')
-            except ValueError as exc:
-                error = ("Param '%s' has no corresponding value, must be "
-                         "specified as key:value" % key)
-                resp.message(error)
+            except ValueError:
+                resp.message("Param '%s' has no corresponding value, must be "
+                             "specified as key:value" % key)
                 return str(resp)
             else:
                 track_params[key] = value.replace('_', ' ')
