@@ -1,6 +1,6 @@
 """models.py"""
 
-from gweetr import db
+from gweetr.database import db
 
 
 class Track(db.Model):

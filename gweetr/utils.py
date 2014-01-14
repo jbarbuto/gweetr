@@ -2,11 +2,11 @@
 
 import random
 
+from flask import current_app as app
 from pyechonest import config as echonest_config
 from pyechonest import song as echonest_song
 import rfc3987
 
-from gweetr import app
 from gweetr.exceptions import GweetrError
 
 echonest_config.ECHO_NEST_API_KEY = app.config['ECHO_NEST_API_KEY']

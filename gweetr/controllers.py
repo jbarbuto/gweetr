@@ -1,11 +1,12 @@
 """controllers.py"""
 
+from flask import current_app as app
 from flask import json, request, session, url_for
 import twilio
 import twilio.rest
 import twilio.twiml
 
-from gweetr import app, db
+from gweetr.database import db
 from gweetr.exceptions import GweetrError
 from gweetr.models import Greeting, Track
 from gweetr.utils import fetch_track, is_valid_url
