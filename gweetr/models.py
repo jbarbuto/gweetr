@@ -5,7 +5,7 @@ from gweetr.database import db
 
 class Track(db.Model):
 
-    """Track model."""
+    """Model for storing greeting tracks."""
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
@@ -23,7 +23,7 @@ class Track(db.Model):
 
 class Greeting(db.Model):
 
-    """Greeting model."""
+    """Model for assigning tracks to greetings."""
 
     id = db.Column(db.Integer, primary_key=True)
     phone = db.Column(db.String, unique=True)
